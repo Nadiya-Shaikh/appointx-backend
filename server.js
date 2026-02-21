@@ -35,10 +35,22 @@ connectCloudinary()
 app.use(express.json())
 // app.use(cors())
 // Allow Vercel frontend
+// app.use(cors({
+//   origin: ['https://appointx-user.vercel.app', 'http://localhost:5173'],
+//   credentials: true
+// }));
+
 app.use(cors({
-  origin: ['https://appointx-user.vercel.app', 'http://localhost:5173'],
+  origin: [
+    "https://appointx-user.vercel.app",
+    "https://appointx-admin.vercel.app",  
+    "http://localhost:5173"
+  ],
   credentials: true
 }));
+
+
+
 
 // api endpoints
 app.use("/api/user", userRouter)
