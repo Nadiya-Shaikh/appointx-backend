@@ -46,7 +46,7 @@ const appointmentsDoctor = async (req, res) => {
     }
 }
 
-// API to cancel appointment for doctor panel
+/*// API to cancel appointment for doctor panel
 const appointmentCancel = async (req, res) => {
     try {
 
@@ -65,6 +65,59 @@ const appointmentCancel = async (req, res) => {
         res.json({ success: false, message: error.message })
     }
 
+}*/
+
+// API to cancel appointment for doctor panel
+// doctorController.js
+
+const appointmentCancel = async (req, res) => {
+    try {
+
+        const { docId, appointmentId } = req.body
+
+        const appointmentData = await appointmentModel.findById(appointmentId)
+
+        if (appointmentData && appointmentData.docId === docId) {
+
+            // ✅ STEP 1 — cancel immediately
+            appointmentData.cancelled = true
+            appointmentData.cancelledBy = "doctor"
+            appointmentData.refundStatus = "processing"
+
+            await appointmentData.save()   // ⭐ IMPORTANT LINE
+
+            // ✅ STEP 2 — WRITE setTimeout HERE
+            setTimeout(async () => {
+                try {
+
+                    const updatedAppointment =
+                        await appointmentModel.findById(appointmentId)
+
+                    if (updatedAppointment) {
+                        updatedAppointment.refundStatus = "refunded"
+                        await updatedAppointment.save()
+
+                       
+                    }
+
+                } catch (err) {
+                    console.log("Refund error:", err)
+                }
+            }, 5000) // 5 sec demo delay
+
+            // ✅ response immediately
+            return res.json({
+                success: true,
+                message: "Appointment cancelled. Refund processing..."
+            })
+        }
+
+        res.json({ success: false, message: "Unauthorized action" })
+
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
 }
 
 // API to mark appointment completed for doctor panel
@@ -75,7 +128,11 @@ const appointmentComplete = async (req, res) => {
 
         const appointmentData = await appointmentModel.findById(appointmentId)
         if (appointmentData && appointmentData.docId === docId) {
-            await appointmentModel.findByIdAndUpdate(appointmentId, { isCompleted: true })
+            await appointmentModel.findByIdAndUpdate(appointmentId, 
+            { 
+              isCompleted: true , 
+              status: "completed"
+            })
             return res.json({ success: true, message: 'Appointment Completed' })
         }
 

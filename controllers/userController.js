@@ -201,7 +201,11 @@ const cancelAppointment = async (req, res) => {
             return res.json({ success: false, message: 'Unauthorized action' })
         }
 
-        await appointmentModel.findByIdAndUpdate(appointmentId, { cancelled: true })
+        // await appointmentModel.findByIdAndUpdate(appointmentId, { cancelled: true })
+        await appointmentModel.findByIdAndUpdate(appointmentId, {
+         cancelled: true,
+         cancelledBy: "user"
+      })
 
         // releasing doctor slot 
         const { docId, slotDate, slotTime } = appointmentData
@@ -221,6 +225,8 @@ const cancelAppointment = async (req, res) => {
         res.json({ success: false, message: error.message })
     }
 }
+
+
 
 // API to get user appointments for frontend my-appointments page
 const listAppointment = async (req, res) => {

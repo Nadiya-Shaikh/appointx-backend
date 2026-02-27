@@ -10,8 +10,15 @@ const appointmentSchema = new mongoose.Schema({
     amount: { type: Number, required: true },
     date: { type: Number, required: true },
     cancelled: { type: Boolean, default: false },
+    refundStatus: {
+    type: String,
+    default: "none" // none | processing | refunded
+},
+    refunded: { type: Boolean, default: false },
+    cancelledBy: { type: String, default: null },
     payment: { type: Boolean, default: false },
-    isCompleted: { type: Boolean, default: false }
+    isCompleted: { type: Boolean, default: false },
+    status: { type: String, default: "pending" }
 })
 
 const appointmentModel = mongoose.models.appointment || mongoose.model("appointment", appointmentSchema)

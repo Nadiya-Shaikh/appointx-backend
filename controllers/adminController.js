@@ -46,7 +46,21 @@ const appointmentCancel = async (req, res) => {
     try {
 
         const { appointmentId } = req.body
-        await appointmentModel.findByIdAndUpdate(appointmentId, { cancelled: true })
+        await appointmentModel.findByIdAndUpdate(appointmentId,
+      { 
+        cancelled: true,
+        cancelledBy: "admin",
+        refundStatus: "processing"
+    })
+
+    // auto refund after few seconds
+    setTimeout(async () => {
+      await appointmentModel.findByIdAndUpdate(
+        appointmentId,
+        { refundStatus: "refunded" }
+      )
+    }, 5000) // 5 sec demo
+
 
         res.json({ success: true, message: 'Appointment Cancelled' })
 
